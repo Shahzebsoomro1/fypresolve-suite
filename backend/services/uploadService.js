@@ -10,20 +10,25 @@ const __dirname = path.dirname(__filename);
 
 // Use /tmp for Vercel serverless, local uploads for development
 const isProduction = process.env.NODE_ENV === 'production';
-const uploadDir = isProduction ? '/tmp/uploads' : path.join(__dirname, '..', 'uploads');
+const uploadDir = isProduction ? '/tmp' : path.join(__dirname, '..', 'uploads');
 
-// Only create directory if not in production (Vercel uses /tmp which exists)
-if (!isProduction && !fs.existsSync(uploadDir)) {
-  try {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  } catch (err) {
-    console.warn('Could not create uploads directory:', err.message);
+// Create uploads directory only if not in production (safely)
+if (!isProduction) {
+  const localUploadDir = path.join(__dirname, '..', 'uploads');
+  if (!fs.existsSync(localUploadDir)) {
+    try {
+      fs.mkdirSync(localUploadDir, { recursive: true });
+    } catch (err) {
+      console.warn('Could not create uploads directory:', err.message);
+    }
   }
 }
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir) // Use /tmp in production, local uploads in dev
+    // For production (Vercel), /tmp should exist
+    // For local dev, create uploads folder
+    cb(null, uploadDir)
   },
   filename: function (req, file, cb) {
     // Generate a unique filename to avoid collisions
