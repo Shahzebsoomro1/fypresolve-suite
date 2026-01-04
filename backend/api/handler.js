@@ -1,15 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import connectDB from '../../config/db.js';
-import organizationRoutes from '../../routes/organizationRoutes.js';
-import authRoutes from '../../routes/authRoutes.js';
-import userRoutes from '../../routes/userRoutes.js';
-import departmentRoutes from '../../routes/departmentRoutes.js';
-import complaintRoutes from '../../routes/complaintRoutes.js';
-import complaintTypeRoutes from '../../routes/complaintTypeRoutes.js';
-import workflowRoutes from '../../routes/workflowRoutes.js';
-import notificationRoutes from '../../routes/notificationRoutes.js';
-import feedbackRoutes from '../../routes/feedbackRoutes.js';
+import connectDB from '../config/db.js';
+import organizationRoutes from '../routes/organizationRoutes.js';
+import authRoutes from '../routes/authRoutes.js';
+import userRoutes from '../routes/userRoutes.js';
+import departmentRoutes from '../routes/departmentRoutes.js';
+import complaintRoutes from '../routes/complaintRoutes.js';
+import complaintTypeRoutes from '../routes/complaintTypeRoutes.js';
+import workflowRoutes from '../routes/workflowRoutes.js';
+import notificationRoutes from '../routes/notificationRoutes.js';
+import feedbackRoutes from '../routes/feedbackRoutes.js';
 import cors from 'cors';
 
 dotenv.config();
