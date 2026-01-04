@@ -21,10 +21,8 @@ export const registerOrganization = async (req, res) => {
 
   try {
     // Check if organization with same name exists (case-insensitive)
-    let existingOrgName = await Organization.findOne({
-      name: { 
-        $regex: new RegExp(`^${organizationName}$`, 'i') 
-      }
+    const existingOrgName = await Organization.findOne({
+      name: { $regex: organizationName, $options: 'i' }
     });
     
     if (existingOrgName) {
@@ -34,7 +32,7 @@ export const registerOrganization = async (req, res) => {
     }
 
     // Check if organization with same email exists
-    let existingOrgEmail = await Organization.findOne({ contactEmail: email });
+    const existingOrgEmail = await Organization.findOne({ contactEmail: email });
     if (existingOrgEmail) {
       return res
         .status(400)
