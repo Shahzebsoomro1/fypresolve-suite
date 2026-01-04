@@ -26,8 +26,18 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB once
+let dbConnected = false;
+const ensureDBConnection = async () => {
+  if (!dbConnected) {
+    try {
+      await connectDB();
+      dbConnected = true;
+    } catch (err) {
+      console.error('DB connection error:', err);
+    }
+  }
+};
 
 // API Routes
 app.use('/api/organizations', organizationRoutes);
@@ -40,13 +50,25 @@ app.use('/api/workflows', workflowRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
+// Middleware to ensure DB connection before handling requests
+app.use(async (req, res, next) => {
+  await ensureDBConnection();
+  next();
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK' });
+  res.json({ status: 'OK', message: 'ResolveSuite API is running' });
 });
 
 app.get('/', (req, res) => {
   res.json({ message: 'ResolveSuite API is running' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err);
+  res.status(500).json({ error: 'Internal Server Error', message: err.message });
 });
 
 export default app;
