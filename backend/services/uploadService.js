@@ -2,21 +2,28 @@
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 // Get directory name in ES module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Make sure the uploads directory exists
-import fs from 'fs';
-const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Use /tmp for Vercel serverless, local uploads for development
+const isProduction = process.env.NODE_ENV === 'production';
+const uploadDir = isProduction ? '/tmp/uploads' : path.join(__dirname, '..', 'uploads');
+
+// Only create directory if not in production (Vercel uses /tmp which exists)
+if (!isProduction && !fs.existsSync(uploadDir)) {
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  } catch (err) {
+    console.warn('Could not create uploads directory:', err.message);
+  }
 }
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, uploadDir) // Use absolute path to uploads directory
+    cb(null, uploadDir) // Use /tmp in production, local uploads in dev
   },
   filename: function (req, file, cb) {
     // Generate a unique filename to avoid collisions
